@@ -1,3 +1,7 @@
 
+# Python version
+python==3.7
+
+# Project dependencies
 PySide2==5.15.2
-nuke==12.2v3
+nuke==15.0v4

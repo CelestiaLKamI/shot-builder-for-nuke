@@ -34,6 +34,10 @@ D:\Sample Production
 2. Copy the contents of menu.py and init.py to respective files in .nuke folder for your local machine
 3. Use the GUI to select projects, episodes, sequences, and shots, and build customized Nuke scripts.
 
+## Note
+
+If you are using .bat to execute this script then please change the path to currently installed nuke path
+
 ## Prerequisites
 
 - **Nuke**: Installed with Python scripting enabled.
