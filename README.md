@@ -30,12 +30,8 @@ D:\Sample Production
 
 ## How to Use
 
-1. Place the `shot_builder.py` and `shot_builder.ui` files in the appropriate folder.
-2. Launch Nuke and run the script using the following command in the Python console:
-   ```python
-   import shot_builder
-   shot_builder.shot_builder()
-   ```
+1. Place the Mayukh Scripts folder in the .nuke folder
+2. Copy the contents of menu.py and init.py to respective files in .nuke folder for your local machine
 3. Use the GUI to select projects, episodes, sequences, and shots, and build customized Nuke scripts.
 
 ## Prerequisites
@@ -52,7 +48,3 @@ pip install PySide2
 
 Created by **Mayukh Mitra**.  
 For inquiries, contact via [email](mailto:mitramayukh5@gmail.com).
-
-## License
-
-This project is licensed under the MIT License.
