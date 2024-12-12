@@ -164,10 +164,10 @@ def shot_builder():
          file_browser.setFileMode(QFileDialog.AnyFile)
          file_browser.setNameFilter("Nuke scripts (*.nk)")
 
-         selected_file, selected_file_filter = file_browser.getOpenFileName(parent=None, caption="Select a custom Master File", dir=path_to_projects, filter="Nuke Scripts (*.nk)")
+         self.selected_file, selected_file_filter = file_browser.getOpenFileName(parent=None, caption="Select a custom Master File", dir=path_to_projects, filter="Nuke Scripts (*.nk)")
 
          self.ui.comboBox_3.clear()
-         self.ui.comboBox_3.addItem(os.path.basename(os.path.normpath(selected_file)))
+         self.ui.comboBox_3.addItem(os.path.basename(os.path.normpath(self.selected_file)))
       
       def child_episode_select(self):
          """
@@ -294,6 +294,10 @@ def shot_builder():
 
          # Path to the master file
          master_file_path = os.path.join(self.path_to_master_folder_for_current_ep, self.ui.comboBox_3.currentText())
+         # Changes the master file path to currently selected file if the user importss a custom shot as master
+         if self.ui.radioButton.isChecked():   
+            master_file_path = self.selected_file
+            
          # Path to copy the file in the child comp directory
          current_file_path = os.path.join(path_to_child_comp_dir, self.ui.comboBox_3.currentText())
          current_filename = os.path.basename(current_file_path)
