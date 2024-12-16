@@ -1,7 +1,7 @@
 import nuke
 import os
 import shutil
-from PySide2.QtWidgets import *
+from PySide2.QtWidgets import QWidget, QSpinBox, QGroupBox, QComboBox, QLabel, QRadioButton, QPushButton, QGridLayout
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtGui import QIcon
 
@@ -257,6 +257,15 @@ def shot_builder():
          Build a child shot comp file by copying the selected master file, 
          renaming it, and updating its file paths to match the selected shot.
          """
+         # Check if the script is unsaved and modified
+         if not os.path.dirname(nuke.root().name()) and nuke.root().modified():
+            nuke.message("Shot cannot be built on a modified script\nPlease open a new empty script")
+            return
+         # Check if the script is saved
+         if os.path.dirname(nuke.root().name()):
+            nuke.message("Shot cannot be built on a modified script\nPlease open a new empty script")
+            return
+      
          # Get values from UI elements
          child_proj = self.ui.comboBox_7.currentText()
          child_ep = self.ui.comboBox_6.currentText()
@@ -264,30 +273,33 @@ def shot_builder():
          child_sh = self.ui.comboBox_4.currentText()
          child_ver = f"V{str(self.ui.spinBox_2.value()).zfill(3)}"
 
-         # Path to the child comp directory
-         path_to_child_comp_dir = os.path.join(path_to_projects, child_proj, "shotpub", child_ep, child_sq, child_sh, "lit_compout", "source", "sequence", child_ver)
-         # Required Format for filename and filepath
-         required_filename = f"{child_proj}_{child_ep}_{child_sq}_{child_sh}_sequence_compout_{child_ver}.nk"
-         required_file_path = os.path.join(path_to_child_comp_dir, required_filename)
-         
-         if "(NONE)" in required_file_path:
-            # Show a message if the path does not exist
-            nuke.message("Child Shot Path Does not exist")
-            return
-         
-         if os.path.exists(required_file_path):
-            # Show a message if the path exists to overwrite or to create new version
-            overwrite_choice = nuke.ask(f"The file {required_filename} already exists...\nDo you want to overwrite it ?")
+         while True:
+            # Path to the child comp directory
+            path_to_child_comp_dir = os.path.join(path_to_projects, child_proj, "shotpub", child_ep, child_sq, child_sh, "lit_compout", "source", "sequence", child_ver)
+            # Required Format for filename and filepath
+            required_filename = f"{child_proj}_{child_ep}_{child_sq}_{child_sh}_sequence_compout_{child_ver}.nk"
+            required_file_path = os.path.join(path_to_child_comp_dir, required_filename)
 
-            if not overwrite_choice:
-               # If the user chooses not to overwrite all variables withe versions will get updated
-               child_ver = f"V{str(self.ui.spinBox_2.value() + 1).zfill(3)}"
-               path_to_child_comp_dir = os.path.join(path_to_projects, child_proj, "shotpub", child_ep, child_sq, child_sh, "lit_compout", "source", "sequence", child_ver)
-               required_filename = f"{child_proj}_{child_ep}_{child_sq}_{child_sh}_sequence_compout_{child_ver}.nk"
-               required_file_path = os.path.join(path_to_child_comp_dir, required_filename)
+            if "(NONE)" in required_file_path:
+                  # Show a message if the path does not exist
+                  nuke.message("Child Shot Path Does not exist")
+                  return
+
+            if os.path.exists(required_file_path):
+                  # Show a message if the path exists to overwrite or to create a new version
+                  overwrite_choice = nuke.ask(f"The file {required_filename} already exists...\nDo you want to overwrite it?")
+
+                  if overwrite_choice:
+                     # Remove the already existing file if user decides to overwrite the existing
+                     os.remove(required_file_path)
+                     break
+                  else:
+                     # Increment the version and update variables for the next iteration
+                     spin_value = int(child_ver[1:]) + 1
+                     child_ver = f"V{str(spin_value).zfill(3)}"
             else:
-               # Remove the already existing file if user decides to overwrite the existing
-               os.remove(required_file_path)
+                  # Exit the loop if the file does not exist
+                  break
 
          # Makes the directory according to the selected user choices for child shot           
          os.makedirs(path_to_child_comp_dir, exist_ok=True)
@@ -323,13 +335,13 @@ def shot_builder():
          self.close()
 
    # Path to the icon file
-   icon_file_path = os.path.join(nuke_user, r"Mayukh Scripts\Shot_Builder\shot_builder.png")
+   icon_file_path = os.path.join(nuke_user, r"mayukh_scripts\shot_builder\shot_builder.png")
 
    # Global variable for the window
    global window
 
    # Create and show the ShotBuilder window
    window = ShotBuilder()
-   window.setWindowTitle("Shot Builder - By Mayukh")
+   window.setWindowTitle("Shot Builder")
    window.setWindowIcon(QIcon(icon_file_path))
    window.show()
