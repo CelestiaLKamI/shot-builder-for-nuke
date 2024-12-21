@@ -1,7 +1,7 @@
 import nuke
 import os
 import shutil
-from PySide2.QtWidgets import QWidget, QSpinBox, QGroupBox, QComboBox, QLabel, QRadioButton, QPushButton, QGridLayout
+from PySide2.QtWidgets import QWidget, QSpinBox, QGroupBox, QComboBox, QLabel, QRadioButton, QPushButton, QGridLayout, QFileDialog
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtGui import QIcon
 
@@ -31,7 +31,7 @@ def shot_builder():
          super().__init__()
          
          # Load the UI file
-         ui_file_path = os.path.join(nuke_user, r"Mayukh Scripts\Shot_Builder\shot_builder.ui")
+         ui_file_path = os.path.join(nuke_user, r"mayukh_scripts\shot_builder\shot_builder.ui")
          self.ui = QUiLoader().load(ui_file_path, self)
 
          # Initialize UI components
