@@ -31,8 +31,9 @@ D:\Sample Production
 ## How to Use
 
 1. Place the Mayukh Scripts folder in the .nuke folder
-2. Copy the contents of menu.py and init.py to respective files in .nuke folder for your local machine
-3. Use the GUI to select projects, episodes, sequences, and shots, and build customized Nuke scripts.
+2. Update the path_to_projects variable in the shot_builder.py file (line 19) with the absolute path to the directory where you have created your project folders (e.g., D:\Sample Production).
+3. Copy the contents of menu.py and init.py to respective files in .nuke folder for your local machine
+4. Use the GUI to select projects, episodes, sequences, and shots, and build customized Nuke scripts. 
 
 ## Note
 
