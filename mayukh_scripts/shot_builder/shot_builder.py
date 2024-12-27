@@ -1,5 +1,6 @@
 import nuke
 import os
+import json
 import shutil
 from PySide2.QtWidgets import QWidget, QSpinBox, QGroupBox, QComboBox, QLabel, QRadioButton, QPushButton, QGridLayout, QFileDialog
 from PySide2.QtUiTools import QUiLoader
@@ -13,10 +14,12 @@ def shot_builder():
    and shots, and allows users to build and customize comp files using a graphical
    user interface built with PySide2.
    """
+   path_file = os.path.join(os.path.expanduser(r"~"), r"\production_path_record\production_path.json")
+   with open(path_file, "r") as file:
+      path_to_projects = json.load(file)
 
    # Define user and project paths
    nuke_user = os.path.expanduser(r"~\.nuke")
-   path_to_projects = r"D:\Sample Production"
    basic_folder_path_for_master = r"Master\Master_Comp_Source"
    basic_folder_path_for_master_output = r"Master\Master_Comp_Output"
 
