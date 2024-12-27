@@ -5,7 +5,7 @@ from shot_builder import shot_builder
 print("Loading menu.py...")
 
 menu = nuke.menu("Nuke")
-my_scripts = menu.addMenu("Mayukh Scripts Testing")
+my_scripts = menu.addMenu("Mayukh Scripts")
 
 shot_builder_tool = my_scripts.addMenu("Shot Builder Tools")
 shot_builder_tool.addCommand("Set Production Path", set_prod_path)
