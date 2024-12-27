@@ -14,6 +14,7 @@ def shot_builder():
    and shots, and allows users to build and customize comp files using a graphical
    user interface built with PySide2.
    """
+   # Path file integration to get the path defined in file created from production path tool
    path_file = os.path.join(os.path.expanduser(r"~"), r"\production_path_record\production_path.json")
    with open(path_file, "r") as file:
       path_to_projects = json.load(file)
