@@ -1,6 +1,5 @@
 import nuke
 import os
-import json
 import shutil
 from PySide2.QtWidgets import QWidget, QSpinBox, QGroupBox, QComboBox, QLabel, QRadioButton, QPushButton, QGridLayout, QFileDialog
 from PySide2.QtUiTools import QUiLoader
@@ -15,15 +14,26 @@ def shot_builder():
    user interface built with PySide2.
    """
    # Path file integration to get the path defined in file created from production path tool
-   path_file = os.path.join(os.path.expanduser(r"~"), r"\production_path_record\production_path.json")
-   with open(path_file, "r") as file:
-      path_to_projects = json.load(file)
+   if os.path.exists("production.path"):
+      with open("production.path", "r") as file:
+         production_path = file.read().strip()
+      if production_path:
+         # Proceed with using production_path
+         nuke.message(f"Production Path Loaded: {production_path}")
+      else:
+         nuke.message("Error: 'production.path' is empty.")
+   else:
+      nuke.message("Error: 'production.path' file not found.")
 
    # Define user and project paths
-   nuke_user = os.path.expanduser(r"~\.nuke")
-   basic_folder_path_for_master = r"Master\Master_Comp_Source"
-   basic_folder_path_for_master_output = r"Master\Master_Comp_Output"
-
+   nuke_user = os.path.expanduser(os.path.join("~", ".nuke"))
+   basic_folder_path_for_master = os.path.join("Master", "Master_Comp_Source")
+   basic_folder_path_for_master_output = os.path.join("Master", "Master_Comp_Output")
+   projects_list_filtered = [
+         "Project A",
+         "Project B"
+   ]
+   
    class ShotBuilder(QWidget):
       """
       The main Shot Builder class, inheriting from QWidget.
@@ -35,7 +45,7 @@ def shot_builder():
          super().__init__()
          
          # Load the UI file
-         ui_file_path = os.path.join(nuke_user, r"mayukh_scripts\shot_builder\shot_builder.ui")
+         ui_file_path = os.path.join(nuke_user, "mayukh_scripts", "shot_builder", "shot_builder.ui")
          self.ui = QUiLoader().load(ui_file_path, self)
 
          # Initialize UI components
@@ -65,11 +75,15 @@ def shot_builder():
          self.setFixedSize(self.ui.width(), self.ui.height())
       
       def cancel_build(self):
-         """Closes the Shot Builder window."""
+         """
+         Closes the Shot Builder window.
+         """
          window.close()
 
       def auto_update_for_options(self):
-         """Automatically updates options based on project selection."""
+         """
+         Automatically updates options based on project selection.
+         """
          self.master_episode_select()
          self.child_episode_select()
          self.child_sequence_select()
@@ -82,30 +96,27 @@ def shot_builder():
          Returns:
                list: A filtered list of project names.
          """
-         projects_list_unfiltered = os.listdir(path_to_projects)
-         projects_list_filtered = [
-               "Project A",
-               "Project B"
-         ]
-
+         
          self.projects_list = []
-
+         projects_list_unfiltered = os.listdir(production_path)
          for each_folder in projects_list_unfiltered:
-               for each_project in projects_list_filtered:
-                  if each_project == each_folder:
-                     self.projects_list.append(each_project)
+            for each_project in projects_list_filtered:
+               if each_project == each_folder:
+                  self.projects_list.append(each_project)
                      
          return self.projects_list
       
       def master_episode_select(self):            
-         """Populates the Master Episode combo box with available episodes."""
+         """
+         Populates the Master Episode combo box with available episodes.
+         """
          self.list_of_episodes_master = []
 
          # Get the currently selected project
          self.currently_selected_project = self.ui.comboBox_7.currentText()
 
          # Define the path to the selected project's shotpub folder
-         self.currently_selected_project_path = os.path.join(path_to_projects, self.currently_selected_project)
+         self.currently_selected_project_path = os.path.join(production_path, self.currently_selected_project)
          self.path_to_shotpub_for_current_episode_master = os.path.join(self.currently_selected_project_path, "shotpub")
          
          # Get the list of episodes in the shotpub folder
@@ -120,7 +131,9 @@ def shot_builder():
          self.ui.comboBox.addItems(self.list_of_episodes_master)
 
       def master_file_select(self):
-         """Populates the Master File combo box with files in the selected episode."""
+         """
+         Populates the Master File combo box with files in the selected episode.
+         """
          self.currently_selected_episode_master = self.ui.comboBox.currentText()
          
          # Define paths for the current episode
@@ -129,8 +142,12 @@ def shot_builder():
          self.list_of_all_master_file = os.listdir(self.path_to_master_folder_for_current_ep)
 
          # Clear and populate the master file combo box
-         self.ui.comboBox_3.clear()
-         self.ui.comboBox_3.addItems(self.list_of_all_master_file)
+         if self.list_of_all_master_file:
+            self.ui.comboBox_3.clear()
+            self.ui.comboBox_3.addItems(self.list_of_all_master_file)
+         else:
+            self.ui.comboBox_3.clear()
+            self.ui.comboBox_3.addItems("(NONE)")
       
       def preview_master(self):
          """
@@ -168,7 +185,7 @@ def shot_builder():
          file_browser.setFileMode(QFileDialog.AnyFile)
          file_browser.setNameFilter("Nuke scripts (*.nk)")
 
-         self.selected_file, selected_file_filter = file_browser.getOpenFileName(parent=None, caption="Select a custom Master File", dir=path_to_projects, filter="Nuke Scripts (*.nk)")
+         self.selected_file, selected_file_filter = file_browser.getOpenFileName(parent=None, caption="Select a custom Master File", dir=production_path, filter="Nuke Scripts (*.nk)")
 
          self.ui.comboBox_3.clear()
          self.ui.comboBox_3.addItem(os.path.basename(os.path.normpath(self.selected_file)))
@@ -279,7 +296,7 @@ def shot_builder():
 
          while True:
             # Path to the child comp directory
-            path_to_child_comp_dir = os.path.join(path_to_projects, child_proj, "shotpub", child_ep, child_sq, child_sh, "lit_compout", "source", "sequence", child_ver)
+            path_to_child_comp_dir = os.path.join(production_path, child_proj, "shotpub", child_ep, child_sq, child_sh, "lit_compout", "source", "sequence", child_ver)
             # Required Format for filename and filepath
             required_filename = f"{child_proj}_{child_ep}_{child_sq}_{child_sh}_sequence_compout_{child_ver}.nk"
             required_file_path = os.path.join(path_to_child_comp_dir, required_filename)
@@ -332,7 +349,7 @@ def shot_builder():
          for read_node in read_nodes:
             current_asset_folder = read_node['file'].getValue().split("/")[-2]
             current_asset = os.path.basename(os.path.normpath(read_node['file'].getValue()))
-            read_node['file'].setValue(os.path.join(path_to_projects, child_proj, "shotpub", child_ep, child_sq, child_sh, "rnd_lyrs", current_asset_folder, current_asset).replace("\\", "/"))
+            read_node['file'].setValue(os.path.join(production_path, child_proj, "shotpub", child_ep, child_sq, child_sh, "rnd_lyrs", current_asset_folder, current_asset).replace("\\", "/"))
 
          # Save the updated comp file
          nuke.scriptSave()

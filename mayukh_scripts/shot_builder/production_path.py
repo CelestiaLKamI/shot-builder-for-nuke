@@ -55,16 +55,12 @@ def set_prod_path():
                 self.path_space.setText(self.selected_dir)
 
         def set_path_operation(self):
-            user_dir = os.path.expanduser(r"~")
-            prod_path_record_dir = os.path.join(user_dir, "production_path_record")
-
-            os.makedirs(prod_path_record_dir, exist_ok= True)
-
-            prod_path_record_file = os.path.join(prod_path_record_dir, "production_path.json")
-
-            with open(prod_path_record_file, "w") as file:
-                json.dump(self.path_space.text(), file)
-            
+            if self.path_space.text().strip():
+                with open("production.path", "w") as file:
+                    file.write(self.path_space.text().strip())
+            else:
+                print("Error: No path selected.")
+                
             self.close()
 
     global window
